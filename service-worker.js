@@ -1,5 +1,40 @@
 const CACHE_NAME = "terpstra-cache-v1";
 
+// Activate immediately
+self.addEventListener("install", () => {
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
+});
+
+// Never cache anything
+self.addEventListener("fetch", (event) => {
+  event.respondWith(fetch(event.request));
+});
+
+
+/*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const CACHE_NAME = "terpstra-cache-v1";
+
 // Add every file your app needs to run offline.
 // IMPORTANT: include audio/image assets your app loads.
 const ASSETS = [
@@ -10,6 +45,7 @@ const ASSETS = [
   "./icon-192.png",
   "./icon-512.png"
 ];
+
 
 // Cache on install
 self.addEventListener("install", (event) => {
@@ -40,3 +76,4 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+*/

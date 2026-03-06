@@ -14,11 +14,16 @@ document.getElementById('settingsForm').onsubmit = goKeyboard;
 
 var getData = new QueryData(location.search, true);
 document.getElementById("fundamental").value = ("fundamental" in getData) ? getData.fundamental : 263.09212;
-document.getElementById("rSteps").value = ("right" in getData) ? getData.right : 1;
-document.getElementById("urSteps").value = ("upright" in getData) ? getData.upright : 4;
+document.getElementById("rSteps").value = ("right" in getData) ? getData.right : 4;
+document.getElementById("urSteps").value = ("upright" in getData) ? getData.upright : 3;
+
+document.getElementById("rloffset").value = ("rloffset" in getData) ? getData.upright : 0;
+document.getElementById("udoffset").value = ("udoffset" in getData) ? getData.upright : 0;
+
 document.getElementById("hexSize").value = ("size" in getData) ? getData.size : 60;
 document.getElementById("boundarySize").value = ("boundary" in getData) ? getData.size : 1;
 document.getElementById("rotation").value = ("rotation" in getData) ? getData.rotation : 0;
+document.getElementById("keyRotation").value = ("keyRotation" in getData) ? getData.keyRotation : 90;
 document.getElementById("instrument").value = ("instrument" in getData) ? getData.instrument : "organ";
 document.getElementById("enum").checked = ("enum" in getData) ? JSON.parse(getData["enum"]) : false;
 document.getElementById("equivSteps").value = ("equivSteps" in getData) ? getData.equivSteps : 12;
@@ -26,6 +31,30 @@ document.getElementById("spectrum_colors").checked = ("spectrum_colors" in getDa
 document.getElementById("fundamental_color").value = ("fundamental_color" in getData) ? getData.fundamental_color : '#55ff55';
 document.getElementById("no_labels").checked = ("no_labels" in getData) ? JSON.parse(getData.no_labels) : false;
 
+
+// added by adam chatgpt
+function getOffsets() {
+  const rl = parseFloat(document.getElementById("rloffset").value) || 0;
+  const ud = parseFloat(document.getElementById("udoffset").value) || 0;
+  
+  console.log('function');
+  console.log(rl);
+  console.log(ud);
+  return { rl, ud };
+
+}
+
+
+function getKeyRotation() {
+  const deg = parseFloat(document.getElementById("keyRotation").value) || 0;
+  console.log('spin');
+  console.log(deg);
+  return deg * Math.PI / 180;
+}
+
+console.log(getOffsets()['rl']);
+console.log(getKeyRotation());
+console.log(getOffsets()['ud']);
 
 var global_pressed_interval;
 var current_text_color = "#000000";
@@ -196,7 +225,8 @@ function parseScaleColors() {
   });
 }
 
-function calculateRotationMatrix(rotation, center) {
+function calculateRotationMatrix
+(rotation, center) {
   var m = [];
 
   m[0] = Math.cos(rotation);
@@ -235,7 +265,7 @@ function resizeHandler() {
 
   var centerX = newWidth / 2;
   var centerY = newHeight / 2;
-  settings.centerpoint = new Point(centerX, centerY);
+  settings.centerpoint = new Point( centerX + getOffsets()['ud'], centerY + getOffsets()['ud']);
 
   // Rotate about it
 
@@ -463,6 +493,9 @@ function goKeyboard() {
     window.addEventListener("keyup", onKeyUp, false);
   }
 
+    
+  /* Adam commented out to remove sustain
+
   //iPad Shake to toggle sustain
   if (typeof window.DeviceMotionEvent != 'undefined') {
     var lastShakeCheck = 0;
@@ -517,6 +550,8 @@ function goKeyboard() {
       z2 = z1;
     }, 300);
   }
+
+*/
 
   //
 
@@ -661,7 +696,7 @@ function getHexCoordsAtMulti(coords) {
   // Tuning knob:
   // Smaller => fewer accidental double-notes
   // Larger  => easier to intentionally hit two keys
-  var boundaryFactor = document.getElementById("boundarySize").value; // 1; // try 0.15–0.28
+  var boundaryFactor = document.getElementById("boundarySize").value; // 1; 
   var delta = settings.hexSize * boundaryFactor;
   var deltaSq = delta * delta;
 
@@ -779,7 +814,7 @@ function drawGrid() {
 
 function hexCoordsToScreen(hex) { /* Point */
   var screenX = settings.centerpoint.x + hex.x * settings.hexWidth + hex.y * settings.hexWidth / 2;
-  var screenY = settings.centerpoint.y + hex.y * settings.hexVert;
+  var screenY = settings.centerpoint.y + hex.y * settings.hexVert ;
   return (new Point(screenX, screenY));
 }
 
@@ -830,7 +865,7 @@ function drawHex(p, c) { /* Point, color */
   }
 
   // Draw shadowed stroke outside clip to create pseudo-3d effect
-
+  
   settings.context.beginPath();
   settings.context.moveTo(x2[0], y2[0]);
   for (var i = 1; i < 6; i++) {
@@ -838,14 +873,14 @@ function drawHex(p, c) { /* Point, color */
   }
   settings.context.closePath();
   settings.context.strokeStyle = 'black';
-  settings.context.lineWidth = 5;
-  settings.context.shadowBlur = 15;
+  settings.context.lineWidth = 5;  // change these two to get rid of 3d blur
+  settings.context.shadowBlur = 15; // change these two to get rid of 3d blur
   settings.context.shadowColor = 'black';
   settings.context.shadowOffsetX = 0;
   settings.context.shadowOffsetY = 0;
   settings.context.stroke();
   settings.context.restore();
-
+  
   // Add a clean stroke around hex
 
   settings.context.beginPath();
@@ -863,12 +898,12 @@ function drawHex(p, c) { /* Point, color */
 
   settings.context.save();
   settings.context.translate(hexCenter.x, hexCenter.y);
-  settings.context.rotate(-settings.rotation);
+  settings.context.rotate(getKeyRotation())// settings.context.rotate(-settings.rotation);
   // hexcoords = p and screenCoords = hexCenter
 
   //settings.context.fillStyle = "black"; //bdl_04062016
   settings.context.fillStyle = getContrastYIQ(current_text_color);
-  settings.context.font = "22pt Arial";
+  settings.context.font = "20pt Arial";
   settings.context.textAlign = "center";
   settings.context.textBaseline = "middle";
 
@@ -895,7 +930,7 @@ function drawHex(p, c) { /* Point, color */
     settings.context.scale(scaleFactor, scaleFactor);
     settings.context.translate(10, -25);
     settings.context.fillStyle = "white";
-    settings.context.font = "12pt Arial";
+    settings.context.font = "0pt Arial";  // adam zeros out octave font
     settings.context.textAlign = "center";
     settings.context.textBaseline = "middle";
     settings.context.fillText(equivMultiple, 0, 0);

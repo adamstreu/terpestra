@@ -114,10 +114,17 @@
 						<div class="u-half-width">
 
                           <label>Right Facing Steps</label>
-                          <input id="rSteps" type="number" min="-1220" max="1220" value="1" onchange="changeURL();noPreset();" class="u-full-width">
+                          <input id="rSteps" type="number" min="-1220" max="1220" value="4" onchange="changeURL();noPreset();" class="u-full-width">
 
                           <label>Up/Right Facing Steps</label>
-                          <input id="urSteps" type="number" min="-1220" max="1220" value="4" onchange="changeURL();noPreset();" class="u-full-width">
+                          <input id="urSteps" type="number" min="-1220" max="1220" value="3" onchange="changeURL();noPreset();" class="u-full-width">
+
+                          <label>Right left offset</label>
+                          <input id="rloffset" type="number" min="-1000" max="1000" value="0" onchange="changeURL();noPreset();" class="u-full-width">
+                        
+                          <label>up down offset</label>
+                          <input id="udoffset" type="number" min="-1000" max="1000" value="0" onchange="changeURL();noPreset();" class="u-full-width">
+
 						</div>
                     </div>
 
@@ -132,6 +139,10 @@
 
                           <label>Rotation (degrees)</label>
                           <input id="rotation" type="number" step="any" min="0" max="360" value="0" onchange="changeURL();noPreset();" class="u-full-width">
+						
+						  <label>Key Rotation (degrees)</label>
+                          <input id="keyRotation" type="number" step="any" min="0" max="360" value="90" onchange="changeURL();noPreset();" class="u-full-width">
+                          	
 						</div>
 
 						<div class="u-half-width">
